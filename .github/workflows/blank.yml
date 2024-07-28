@@ -1,12 +1,6 @@
 name: Build Android App
 
-on:
-  workflow_dispatch:
-    inputs:
-      website_url:
-        description: 'URL of the website to display in the app'
-        required: true
-        default: 'https://www.example.com'
+on: [push]
 
 jobs:
   build:
@@ -14,74 +8,121 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up JDK
-      uses: actions/setup-java@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
       with:
-        distribution: 'adopt'
         java-version: '11'
+        distribution: 'adopt-openjdk'
 
-    - name: Download and set up Android SDK
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget unzip
-        wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O sdk-tools.zip
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        unzip sdk-tools.zip -d $HOME/android-sdk/cmdline-tools
-        mv $HOME/android-sdk/cmdline-tools/cmdline-tools/* $HOME/android-sdk/cmdline-tools
-        export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools
-        yes | sdkmanager --sdk_root=$ANDROID_HOME "build-tools;33.0.0" "platform-tools" "platforms;android-33"
-
-    - name: Set up Gradle
-      run: |
-        wget https://services.gradle.org/distributions/gradle-8.9-bin.zip -O gradle.zip
-        unzip gradle.zip -d /opt/gradle
-        export PATH=$PATH:/opt/gradle/gradle-8.9/bin
-
-    - name: Create Android project structure
+    - name: Create MyFirstApp Directory
       run: |
         mkdir -p MyFirstApp/src/main/java/com/example/myfirstapp
         mkdir -p MyFirstApp/src/main/res/layout
-        mkdir -p MyFirstApp/src/main/res/values
-        cd MyFirstApp
 
-        # Create settings.gradle file
-        echo "rootProject.name = 'MyFirstApp'" > settings.gradle
-        echo "include ':app'" >> settings.gradle
+    - name: Create build.gradle
+      run: |
+        cat <<EOL > MyFirstApp/build.gradle
+plugins {
+    id 'com.android.application' version '8.1.0'
+}
 
-        # Create build.gradle file
-        echo "plugins { id 'com.android.application' version '8.1.0' } repositories { google() mavenCentral() } dependencies { }" > build.gradle
+android {
+    compileSdkVersion 33
 
-        # Create app/build.gradle file
-        mkdir -p app/src/main/java/com/example/myfirstapp
-        mkdir -p app/src/main/res/layout
-        mkdir -p app/src/main/res/values
-        echo "android { compileSdkVersion 33 defaultConfig { applicationId \"com.example.myfirstapp\" minSdkVersion 21 targetSdkVersion 33 versionCode 1 versionName \"1.0\" } buildTypes { release { minifyEnabled false proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } } } repositories { google() mavenCentral() } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' implementation 'androidx.core:core-ktx:1.10.1' implementation 'androidx.constraintlayout:constraintlayout:2.1.4' implementation 'com.google.android.material:material:1.9.0' testImplementation 'junit:junit:4.13.2' androidTestImplementation 'androidx.test.ext:junit:1.1.5' androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' }" > app/build.gradle
+    defaultConfig {
+        applicationId "com.example.myfirstapp"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+    }
 
-        # Create AndroidManifest.xml file
-        echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"com.example.myfirstapp\">\n<application android:allowBackup=\"true\" android:label=\"@string/app_name\" android:theme=\"@style/Theme.AppCompat.Light.NoActionBar\">\n<activity android:name=\".MainActivity\">\n<intent-filter>\n<action android:name=\"android.intent.action.MAIN\" />\n<category android:name=\"android.intent.category.LAUNCHER\" />\n</intent-filter>\n</activity>\n</application>\n</manifest>" > app/src/main/AndroidManifest.xml
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
 
-        # Create layout file
-        echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\">\n<WebView android:id=\"@+id/webView\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" />\n</RelativeLayout>" > app/src/main/res/layout/activity_main.xml
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
+EOL
 
-        # Create strings.xml file
-        echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n<string name=\"app_name\">MyFirstApp</string>\n</resources>" > app/src/main/res/values/strings.xml
+    - name: Create settings.gradle
+      run: |
+        echo "rootProject.name = 'MyFirstApp'\ninclude ':app'" > MyFirstApp/settings.gradle
 
-        # Create MainActivity.java file
-        echo "package com.example.myfirstapp;\nimport android.os.Bundle;\nimport android.webkit.WebView;\nimport androidx.appcompat.app.AppCompatActivity;\npublic class MainActivity extends AppCompatActivity { @Override protected void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); setContentView(R.layout.activity_main); WebView webView = findViewById(R.id.webView); webView.loadUrl(\"${{ github.event.inputs.website_url }}\"); } }" > app/src/main/java/com/example/myfirstapp/MainActivity.java
+    - name: Create AndroidManifest.xml
+      run: |
+        mkdir -p MyFirstApp/src/main/AndroidManifest.xml
+        cat <<EOL > MyFirstApp/src/main/AndroidManifest.xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.myfirstapp">
 
-        # Generate Gradle wrapper
-        gradle wrapper
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyFirstApp">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
 
-    - name: Build APK
+</manifest>
+EOL
+
+    - name: Create MainActivity.java
+      run: |
+        cat <<EOL > MyFirstApp/src/main/java/com/example/myfirstapp/MainActivity.java
+package com.example.myfirstapp;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.webkit.WebView;
+
+public class MainActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        WebView webView = findViewById(R.id.webView);
+        webView.loadUrl("https://www.example.com");
+    }
+}
+EOL
+
+    - name: Create activity_main.xml
+      run: |
+        cat <<EOL > MyFirstApp/src/main/res/layout/activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>
+EOL
+
+    - name: Run Gradle Wrapper
       run: |
         cd MyFirstApp
+        ./gradlew wrapper
         ./gradlew assembleRelease
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v2
-      with:
-        name: MyFirstApp
-        path: MyFirstApp/app/build/outputs/apk/release/app-release.apk
