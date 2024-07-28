@@ -16,7 +16,12 @@ jobs:
         java-version: '11'
         distribution: 'adopt-openjdk'
 
-    - name: Create MyFirstApp Directory and Files
+    - name: Set up Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: '8.1'  # Use the desired Gradle version
+
+    - name: Create Project Files
       run: |
         mkdir -p MyFirstApp/src/main/java/com/example/myfirstapp
         mkdir -p MyFirstApp/src/main/res/layout
@@ -115,7 +120,7 @@ EOL
 </LinearLayout>
 EOL
 
-    - name: Run Gradle Wrapper
+    - name: Build with Gradle
       run: |
         cd MyFirstApp
         ./gradlew wrapper
