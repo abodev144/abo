@@ -16,13 +16,12 @@ jobs:
         java-version: '11'
         distribution: 'adopt-openjdk'
 
-    - name: Create MyFirstApp Directory
+    - name: Create MyFirstApp Directory and Files
       run: |
         mkdir -p MyFirstApp/src/main/java/com/example/myfirstapp
         mkdir -p MyFirstApp/src/main/res/layout
 
-    - name: Create build.gradle
-      run: |
+        # Create build.gradle
         cat <<EOL > MyFirstApp/build.gradle
 plugins {
     id 'com.android.application' version '8.1.0'
@@ -57,13 +56,10 @@ dependencies {
 }
 EOL
 
-    - name: Create settings.gradle
-      run: |
+        # Create settings.gradle
         echo "rootProject.name = 'MyFirstApp'\ninclude ':app'" > MyFirstApp/settings.gradle
 
-    - name: Create AndroidManifest.xml
-      run: |
-        mkdir -p MyFirstApp/src/main/AndroidManifest.xml
+        # Create AndroidManifest.xml
         cat <<EOL > MyFirstApp/src/main/AndroidManifest.xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.myfirstapp">
@@ -86,8 +82,7 @@ EOL
 </manifest>
 EOL
 
-    - name: Create MainActivity.java
-      run: |
+        # Create MainActivity.java
         cat <<EOL > MyFirstApp/src/main/java/com/example/myfirstapp/MainActivity.java
 package com.example.myfirstapp;
 
@@ -106,8 +101,7 @@ public class MainActivity extends Activity {
 }
 EOL
 
-    - name: Create activity_main.xml
-      run: |
+        # Create activity_main.xml
         cat <<EOL > MyFirstApp/src/main/res/layout/activity_main.xml
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
