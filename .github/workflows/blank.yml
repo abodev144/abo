@@ -48,7 +48,8 @@ jobs:
         cd MyFirstApp
 
         # Create settings.gradle file
-        echo "rootProject.name = 'MyFirstApp'\ninclude ':app'" > settings.gradle
+        echo "rootProject.name = 'MyFirstApp'" > settings.gradle
+        echo "include ':app'" >> settings.gradle
 
         # Create build.gradle file
         echo "plugins { id 'com.android.application' version '8.1.0' }" > build.gradle
