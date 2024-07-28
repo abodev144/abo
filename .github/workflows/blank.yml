@@ -138,9 +138,17 @@ jobs:
         }
         EOF
 
+    - name: Download Gradle Wrapper
+      run: |
+        wget https://services.gradle.org/distributions/gradle-7.6-bin.zip -O gradle.zip
+        unzip gradle.zip
+        export GRADLE_HOME=$PWD/gradle-7.6
+        export PATH=$PATH:$GRADLE_HOME/bin
+
     - name: Build APK
       run: |
         cd MyFirstApp
+        gradle wrapper
         ./gradlew assembleRelease
 
     - name: Upload APK
