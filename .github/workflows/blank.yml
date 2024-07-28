@@ -22,106 +22,97 @@ jobs:
     - name: Set up Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        gradle-version: '8.1'  # Specify the Gradle version you need
+        gradle-version: '8.1'
 
-    - name: Create Project Files
+    - name: Create Android Project Files
       run: |
         mkdir -p MyFirstApp/src/main/java/com/example/myfirstapp
         mkdir -p MyFirstApp/src/main/res/layout
 
-        # Create build.gradle
-        cat <<EOL > MyFirstApp/build.gradle
-plugins {
-    id 'com.android.application' version '8.1.0'
-}
-
-android {
-    compileSdkVersion 33
-
-    defaultConfig {
-        applicationId "com.example.myfirstapp"
-        minSdkVersion 21
-        targetSdkVersion 33
-        versionCode 1
-        versionName "1.0"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        # Create build.gradle file
+        echo "plugins {
+            id 'com.android.application' version '8.1.0'
         }
-    }
-}
 
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-}
-EOL
+        android {
+            compileSdkVersion 33
+            defaultConfig {
+                applicationId 'com.example.myfirstapp'
+                minSdkVersion 21
+                targetSdkVersion 33
+                versionCode 1
+                versionName '1.0'
+            }
+            buildTypes {
+                release {
+                    minifyEnabled false
+                    proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                }
+            }
+        }
 
-        # Create settings.gradle
-        echo "rootProject.name = 'MyFirstApp'\ninclude ':app'" > MyFirstApp/settings.gradle
+        dependencies {
+            implementation 'androidx.appcompat:appcompat:1.6.1'
+            implementation 'androidx.core:core-ktx:1.10.1'
+            implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+            testImplementation 'junit:junit:4.13.2'
+            androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+            androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+        }" > MyFirstApp/build.gradle
+
+        # Create settings.gradle file
+        echo "rootProject.name = 'MyFirstApp'
+        include ':app'" > MyFirstApp/settings.gradle
 
         # Create AndroidManifest.xml
-        cat <<EOL > MyFirstApp/src/main/AndroidManifest.xml
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.myfirstapp">
+        echo "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"
+            package=\"com.example.myfirstapp\">
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.MyFirstApp">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
+            <application
+                android:allowBackup=\"true\"
+                android:icon=\"@mipmap/ic_launcher\"
+                android:label=\"@string/app_name\"
+                android:roundIcon=\"@mipmap/ic_launcher_round\"
+                android:supportsRtl=\"true\"
+                android:theme=\"@style/Theme.MyFirstApp\">
+                <activity android:name=\".MainActivity\">
+                    <intent-filter>
+                        <action android:name=\"android.intent.action.MAIN\" />
+                        <category android:name=\"android.intent.category.LAUNCHER\" />
+                    </intent-filter>
+                </activity>
+            </application>
 
-</manifest>
-EOL
+        </manifest>" > MyFirstApp/src/main/AndroidManifest.xml
 
         # Create MainActivity.java
-        cat <<EOL > MyFirstApp/src/main/java/com/example/myfirstapp/MainActivity.java
-package com.example.myfirstapp;
+        echo "package com.example.myfirstapp;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.webkit.WebView;
+        import android.app.Activity;
+        import android.os.Bundle;
+        import android.webkit.WebView;
 
-public class MainActivity extends Activity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        WebView webView = findViewById(R.id.webView);
-        webView.loadUrl("https://www.example.com");
-    }
-}
-EOL
+        public class MainActivity extends Activity {
+            @Override
+            protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+                setContentView(R.layout.activity_main);
+                WebView webView = findViewById(R.id.webView);
+                webView.loadUrl(\"https://www.example.com\");
+            }
+        }" > MyFirstApp/src/main/java/com/example/myfirstapp/MainActivity.java
 
         # Create activity_main.xml
-        cat <<EOL > MyFirstApp/src/main/res/layout/activity_main.xml
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+        echo "<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"
+            android:layout_width=\"match_parent\"
+            android:layout_height=\"match_parent\"
+            android:orientation=\"vertical\">
 
-    <WebView
-        android:id="@+id/webView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</LinearLayout>
-EOL
+            <WebView
+                android:id=\"@+id/webView\"
+                android:layout_width=\"match_parent\"
+                android:layout_height=\"match_parent\"/>
+        </LinearLayout>" > MyFirstApp/src/main/res/layout/activity_main.xml
 
     - name: Build with Gradle
       run: |
