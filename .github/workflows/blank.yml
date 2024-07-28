@@ -1,6 +1,9 @@
 name: Build Android App
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -19,7 +22,7 @@ jobs:
     - name: Set up Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        gradle-version: '8.1'  # Use the desired Gradle version
+        gradle-version: '8.1'  # Specify the Gradle version you need
 
     - name: Create Project Files
       run: |
