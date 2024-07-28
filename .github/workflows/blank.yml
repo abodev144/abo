@@ -1,0 +1,71 @@
+name: Build Android App
+
+on:
+  workflow_dispatch:
+    inputs:
+      website_url:
+        description: 'URL of the website to display in the app'
+        required: true
+        default: 'https://www.example.com'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Download and set up Android SDK
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip
+        wget https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip -O sdk-tools.zip
+        unzip sdk-tools.zip -d $HOME/android-sdk
+        mkdir -p $HOME/android-sdk/cmdline-tools/tools
+        mv $HOME/android-sdk/cmdline-tools/* $HOME/android-sdk/cmdline-tools/tools
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools
+        yes | sdkmanager --sdk_root=$ANDROID_HOME "build-tools;29.0.2" "platform-tools" "platforms;android-29"
+
+    - name: Set up environment variables
+      run: |
+        echo "JAVA_HOME: $JAVA_HOME"
+        echo "ANDROID_HOME: $HOME/android-sdk"
+        echo "PATH: $PATH"
+
+    - name: Create Android project structure
+      run: |
+        mkdir -p MyFirstApp/src/com/example/myfirstapp
+        mkdir -p MyFirstApp/res/layout
+        mkdir -p MyFirstApp/res/values
+        echo '<?xml version="1.0" encoding="utf-8"?><RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent"><WebView android:id="@+id/webView" android:layout_width="match_parent" android:layout_height="match_parent"/></RelativeLayout>' > MyFirstApp/res/layout/activity_main.xml
+        echo '<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">MyFirstApp</string></resources>' > MyFirstApp/res/values/strings.xml
+        echo '<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.myfirstapp"><application android:allowBackup="true" android:label="@string/app_name" android:theme="@style/Theme.AppCompat.Light.NoActionBar"><activity android:name=".MainActivity"><intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter></activity></application></manifest>' > MyFirstApp/AndroidManifest.xml
+        echo "package com.example.myfirstapp;import android.app.Activity;import android.os.Bundle;import android.webkit.WebView;public class MainActivity extends Activity { @Override protected void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); setContentView(R.layout.activity_main); WebView webView = findViewById(R.id.webView); webView.loadUrl('${{ github.event.inputs.website_url }}'); }}" > MyFirstApp/src/com/example/myfirstapp/MainActivity.java
+
+    - name: Compile and build APK
+      run: |
+        export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
+        export ANDROID_HOME=$HOME/android-sdk
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools
+        javac -d out -sourcepath MyFirstApp/src MyFirstApp/src/com/example/myfirstapp/MainActivity.java
+        dx --dex --output=out/classes.dex out
+        aapt package -f -m -J MyFirstApp/src -M MyFirstApp/AndroidManifest.xml -S MyFirstApp/res -I $ANDROID_HOME/platforms/android-29/android.jar
+        javac -d out -sourcepath MyFirstApp/src MyFirstApp/src/com/example/myfirstapp/R.java
+        dx --dex --output=out/classes.dex out
+        aapt package -f -M MyFirstApp/AndroidManifest.xml -S MyFirstApp/res -I $ANDROID_HOME/platforms/android-29/android.jar -F out/app.unaligned.apk out
+        aapt add out/app.unaligned.apk out/classes.dex
+        apksigner sign --ks my-release-key.jks --ks-key-alias my-key-alias --ks-pass pass:my-key-password --out out/app.apk out/app.unaligned.apk
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: MyFirstApp
+        path: out/app.apk
