@@ -47,19 +47,19 @@ jobs:
         mkdir -p MyFirstApp/src/main/res/values
         cd MyFirstApp
 
-        # Create build.gradle file
-        echo "plugins { id 'com.android.application' version '8.1.0' }" > build.gradle
-        echo "android { compileSdkVersion 33 defaultConfig { applicationId \"com.example.myfirstapp\" minSdkVersion 21 targetSdkVersion 33 versionCode 1 versionName \"1.0\" } buildTypes { release { minifyEnabled false proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } } } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' implementation 'androidx.core:core-ktx:1.10.1' implementation 'androidx.constraintlayout:constraintlayout:2.1.4' implementation 'com.google.android.material:material:1.9.0' testImplementation 'junit:junit:4.13.2' androidTestImplementation 'androidx.test.ext:junit:1.1.5' androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' }" > build.gradle
-
         # Create settings.gradle file
         echo "rootProject.name = 'MyFirstApp'\ninclude ':app'" > settings.gradle
+
+        # Create build.gradle file
+        echo "plugins { id 'com.android.application' version '8.1.0' }" > build.gradle
+        echo "android { compileSdkVersion 33 defaultConfig { applicationId \"com.example.myfirstapp\" minSdkVersion 21 targetSdkVersion 33 versionCode 1 versionName \"1.0\" } buildTypes { release { minifyEnabled false proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } } } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' implementation 'androidx.core:core-ktx:1.10.1' implementation 'androidx.constraintlayout:constraintlayout:2.1.4' implementation 'com.google.android.material:material:1.9.0' testImplementation 'junit:junit:4.13.2' androidTestImplementation 'androidx.test.ext:junit:1.1.5' androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' }" >> build.gradle
 
         # Create app/build.gradle file
         mkdir -p app/src/main/java/com/example/myfirstapp
         mkdir -p app/src/main/res/layout
         mkdir -p app/src/main/res/values
         echo "plugins { id 'com.android.application' }" > app/build.gradle
-        echo "android { compileSdkVersion 33 defaultConfig { applicationId \"com.example.myfirstapp\" minSdkVersion 21 targetSdkVersion 33 versionCode 1 versionName \"1.0\" } buildTypes { release { minifyEnabled false proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } } } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' implementation 'androidx.core:core-ktx:1.10.1' implementation 'androidx.constraintlayout:constraintlayout:2.1.4' implementation 'com.google.android.material:material:1.9.0' testImplementation 'junit:junit:4.13.2' androidTestImplementation 'androidx.test.ext:junit:1.1.5' androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' }" > app/build.gradle
+        echo "android { compileSdkVersion 33 defaultConfig { applicationId \"com.example.myfirstapp\" minSdkVersion 21 targetSdkVersion 33 versionCode 1 versionName \"1.0\" } buildTypes { release { minifyEnabled false proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } } } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' implementation 'androidx.core:core-ktx:1.10.1' implementation 'androidx.constraintlayout:constraintlayout:2.1.4' implementation 'com.google.android.material:material:1.9.0' testImplementation 'junit:junit:4.13.2' androidTestImplementation 'androidx.test.ext:junit:1.1.5' androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1' }" >> app/build.gradle
 
         # Create AndroidManifest.xml file
         echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"com.example.myfirstapp\">\n<application android:allowBackup=\"true\" android:label=\"@string/app_name\" android:theme=\"@style/Theme.AppCompat.Light.NoActionBar\">\n<activity android:name=\".MainActivity\">\n<intent-filter>\n<action android:name=\"android.intent.action.MAIN\" />\n<category android:name=\"android.intent.category.LAUNCHER\" />\n</intent-filter>\n</activity>\n</application>\n</manifest>" > app/src/main/AndroidManifest.xml
