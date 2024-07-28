@@ -26,12 +26,12 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y wget unzip
-        wget https://dl.google.com/android/repository/commandlinetools-linux-6200805_latest.zip -O sdk-tools.zip
+        wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O sdk-tools.zip
         unzip sdk-tools.zip -d $HOME/android-sdk
-        mkdir -p $HOME/android-sdk/cmdline-tools/tools
-        mv $HOME/android-sdk/cmdline-tools/* $HOME/android-sdk/cmdline-tools/tools
+        mkdir -p $HOME/android-sdk/cmdline-tools/latest
+        mv $HOME/android-sdk/cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest
         export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
         yes | sdkmanager --sdk_root=$ANDROID_HOME "build-tools;29.0.2" "platform-tools" "platforms;android-29"
 
     - name: Set up environment variables
@@ -54,7 +54,7 @@ jobs:
       run: |
         export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))
         export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools
+        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
         javac -d out -sourcepath MyFirstApp/src MyFirstApp/src/com/example/myfirstapp/MainActivity.java
         dx --dex --output=out/classes.dex out
         aapt package -f -m -J MyFirstApp/src -M MyFirstApp/AndroidManifest.xml -S MyFirstApp/res -I $ANDROID_HOME/platforms/android-29/android.jar
