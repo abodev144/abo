@@ -29,6 +29,7 @@ jobs:
         wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O sdk-tools.zip
         mkdir -p $HOME/android-sdk/cmdline-tools
         unzip sdk-tools.zip -d $HOME/android-sdk/cmdline-tools
+        mv $HOME/android-sdk/cmdline-tools/cmdline-tools/* $HOME/android-sdk/cmdline-tools
         export ANDROID_HOME=$HOME/android-sdk
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools
         yes | sdkmanager --sdk_root=$ANDROID_HOME "build-tools;29.0.2" "platform-tools" "platforms;android-29"
